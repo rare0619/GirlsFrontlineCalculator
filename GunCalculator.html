@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        input, label{
+            margin:20px;
+        }
+        .avg{
+            background-color: #EEC211;
+        }
+    </style>
+    <script type="text/javascript">
+        //PS. 此处数值数组顺序为攻击、命中、回避、射速
+        //手枪数据
+        var HG = {
+            "avg":[ 0.21, 0.25, 0.35, 0.24],
+            "M1911":[ 0.2, 0.232, 0.318, 0.243],
+            "纳甘左轮":[ 0.216, 0.232, 0.367, 0.194],
+            "P38":[ 0.2, 0.232, 0.343, 0.243],
+            "PPK":[ 0.183, 0.263, 0.389, 0.263],
+            "FNP-9":[ 0.216, 0.263, 0.367, 0.263],
+            "MP-446":[ 0.216, 0.263, 0.318, 0.253]
+        };
+        //冲锋枪数据
+        var SMG = {
+            "avg":[ 0.21, 0.09, 0.32, 0.31],
+            "M3":[ 0.216, 0.089, 0.318, 0.282],
+            "PP2000":[ 0.232, 0.089, 0.367, 0.330],
+            "MP-40":[ 0.216, 0.089, 0.291, 0.309],
+            "伯莱塔38型":[0.232, 0.089, 0.263, 0.309],
+            "Spectre M4":[ 0.2, 0.089, 0.343, 0.355],
+            "IDW":[ 0.183, 0.089, 0.343, 0.295]
+        };
+
+        //步枪数据
+        var RF = {
+            "avg":[ 0.54, 0.31, 0.18, 0.17],
+            "西蒙诺夫":[ 0.526, 0.291, 0.2, 0.166],
+            "G43":[ 0.541, 0.291, 0.166, 0.183],
+            "BM59":[ 0.568, 0.343, 0.166, 0.166]
+        }
+
+        //突击步枪数据
+        var AR = {
+            "avg":[ 0.32, 0.21, 0.2, 0.27],
+            "G3":[ 0.343, 0.232, 0.2, 0.258],
+            "L85A1":[ 0.291, 0.2, 0.2, 0.309],
+            "加利尔":[ 0.304, 0.2, 0.2, 0.267],
+            "SIG-510":[ 0.330, 0.2, 0.2, 0.248]
+        };
+
+        function getOneTypeCount(arr, gun){
+            count = [0, 0, 0, 0];//统计用枪数
+
+            for(var i=0; i<4; i++){
+                count[i] =Math.ceil(arr[i]/gun[i]);
+            }
+            max = Math.max.apply(Math,count);
+            return max;
+        }
+
+        //计算属性值
+        function getFinalValue(num, gun){
+            final = [0, 0, 0, 0];
+            for(var i=0; i<4; i++){
+                final[i] =Math.floor(num*gun[i]);
+            }
+            return final;
+        }
+
+    </script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <form id="form1" class="form-inline">
+                <div class="form-group">
+                    <label for="atk">伤害</label><input class="form-control" id="atk" type="number" min=0 value=0 required="required" />
+                    <label for="dod">回避</label><input class="form-control" id="dod" type="number" min=0 value=0 required="required" />
+
+                </div><br>
+                <div class="form-group">
+                    <label for="hit">命中</label><input class="form-control" id="hit" type="number" min=0 value=0 required="required" />
+                    <label for="spd">射速</label><input class="form-control" id="spd" type="number" min=0 value=0 required="required" />
+                </div>
+                <button type="submit" id='clickme' class="btn btn-default">计算</button>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table id="result" class="table table-bordered">
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $("#form1").on("submit", function(){
+        console.log($("#atk").val());
+        $("#result").html("<thead><tr><th>名称</th><th>数量</th><th>获得的各项加值</th></tr></thead><tbody></tbody>");
+        arr = [$("#atk").val(),$("#hit").val(),$("#dod").val(),$("#spd").val()];
+        for(i in HG){
+            //console.log(i+":"+getOneTypeCount(arr, HG[i]))
+            num = getOneTypeCount(arr, HG[i]);
+            result = getFinalValue(num, HG[i]);
+            if(i == 'avg'){
+                $("#result").append("<tr class='avg'><td>" + 'HG平均使用' + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }else{
+                $("#result").append("<tr><td>" + i + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }
+
+        }
+        for(i in SMG){
+            //console.log(i+":"+getOneTypeCount(arr, HG[i]))
+            num = getOneTypeCount(arr, SMG[i]);
+            result = getFinalValue(num, SMG[i]);
+            if(i == 'avg'){
+                $("#result").append("<tr class='avg'><td>" + 'SMG平均使用' + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }else{
+                $("#result").append("<tr><td>" + i + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }
+
+        }
+        for(i in RF){
+            //console.log(i+":"+getOneTypeCount(arr, HG[i]))
+            num = getOneTypeCount(arr, RF[i]);
+            result = getFinalValue(num, RF[i]);
+            if(i == 'avg'){
+                $("#result").append("<tr class='avg'><td>" + 'RF平均使用' + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }else{
+                $("#result").append("<tr><td>" + i + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }
+
+        }
+        for(i in AR){
+            //console.log(i+":"+getOneTypeCount(arr, HG[i]))
+            num = getOneTypeCount(arr, AR[i]);
+            result = getFinalValue(num, AR[i]);
+            if(i == 'avg'){
+                $("#result").append("<tr class='avg'><td>" + 'AR平均使用' + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }else{
+                $("#result").append("<tr><td>" + i + "</td><td>" + num + "</td><td>" + "伤害:" + result[0] + "回避:" + result[2] + "命中:" + result[1] + "射速:" + result[3] + "</td></tr>");
+            }
+
+        }
+        return false;
+    });
+</script>
+</body>
+</html>
